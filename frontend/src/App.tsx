@@ -146,7 +146,6 @@ function App() {
                     <h1 className="text-2xl font-bold leading-tight">
                         Tropical Plant Catalog
                     </h1>
-                    <p className="text-emerald-200 text-xs">Explore nature's diversity</p>
                 </div>
              </div>
           </div>
