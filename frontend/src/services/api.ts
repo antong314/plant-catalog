@@ -19,7 +19,7 @@ export const fetchPlants = async (search: string, filters: FilterState, ids?: st
   }
 
   Object.entries(filters).forEach(([key, values]) => {
-    values.forEach(value => {
+    (values as string[]).forEach((value: string) => {
       params.append(key, value);
     });
   });
