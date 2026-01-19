@@ -47,13 +47,14 @@ function App() {
     const loadPlants = async () => {
       setLoading(true);
       try {
+        const ids = showFavoritesOnly ? Array.from(favorites) : undefined;
+        // Optimization: If showing favorites only and we have no favorites, skip fetch
         if (showFavoritesOnly && favorites.size === 0) {
             setPlants([]);
             setLoading(false);
             return;
         }
         
-        const ids = showFavoritesOnly ? Array.from(favorites) : undefined;
         const data = await fetchPlants(searchQuery, filters, ids);
         setPlants(data);
       } catch (error) {
@@ -66,7 +67,12 @@ function App() {
     // Simple debounce
     const timeoutId = setTimeout(loadPlants, 300);
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, filters, showFavoritesOnly, favorites]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, filters, showFavoritesOnly]); // Removed favorites from dependency to prevent fetch on toggle
+
+  const visiblePlants = showFavoritesOnly 
+    ? plants.filter(p => favorites.has(p['Botanical Name'])) 
+    : plants;
 
   // Save Favorites
   useEffect(() => {
@@ -144,14 +150,14 @@ function App() {
             <>
                 <div className="flex justify-between items-center px-2">
                     <p className="text-gray-500">
-                        Found {plants.length} plants
+                        Found {visiblePlants.length} plants
                         {showFavoritesOnly && ' in favorites'}
                     </p>
                 </div>
                 
-                {plants.length > 0 ? (
+                {visiblePlants.length > 0 ? (
                     <PlantGrid 
-                        plants={plants} 
+                        plants={visiblePlants} 
                         favorites={favorites}
                         onPlantClick={setSelectedPlant}
                         onToggleFavorite={handleToggleFavorite}
