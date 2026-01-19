@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import pandas as pd
 from typing import List, Optional
 import os
@@ -20,6 +21,7 @@ app.add_middleware(
 # Load Data - use paths relative to the project root
 CSV_PATH = "tropical-plants.csv"
 IMG_DIR = "img"
+FRONTEND_DIR = "frontend/dist"
 
 # Mount static images
 app.mount("/images", StaticFiles(directory=IMG_DIR), name="images")
@@ -247,3 +249,21 @@ def get_plants(
     # but let's stick to raw headers to avoid confusion, frontend can handle mapping.
     
     return result
+
+# Serve frontend static files (only if built)
+if os.path.exists(FRONTEND_DIR):
+    # Serve static assets (JS, CSS, etc.)
+    app.mount("/assets", StaticFiles(directory=f"{FRONTEND_DIR}/assets"), name="frontend-assets")
+    
+    # Serve index.html for the root and any non-API routes (SPA catch-all)
+    @app.get("/")
+    async def serve_root():
+        return FileResponse(f"{FRONTEND_DIR}/index.html")
+    
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # If the file exists, serve it; otherwise serve index.html for SPA routing
+        file_path = f"{FRONTEND_DIR}/{full_path}"
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(f"{FRONTEND_DIR}/index.html")

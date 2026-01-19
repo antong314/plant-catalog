@@ -1,7 +1,9 @@
 import axios from 'axios';
 import type { Plant, FilterOptions, FilterState } from '../types';
 
-const API_URL = 'http://localhost:8000/api';
+// Use relative URLs in production, localhost in development
+const API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:8000/api';
+const BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:8000';
 
 export const fetchFilters = async (): Promise<FilterOptions> => {
   // Add timestamp to prevent caching
@@ -27,5 +29,5 @@ export const fetchPlants = async (search: string, filters: FilterState, ids?: st
 };
 
 export const getImageUrl = (imageName: string) => {
-    return `http://localhost:8000/images/${imageName}`;
+    return `${BASE_URL}/images/${imageName}`;
 }
