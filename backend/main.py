@@ -17,9 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load Data
-CSV_PATH = "../tropical-plants.csv"
-IMG_DIR = "../img"
+# Load Data - use paths relative to the project root
+CSV_PATH = "tropical-plants.csv"
+IMG_DIR = "img"
 
 # Mount static images
 app.mount("/images", StaticFiles(directory=IMG_DIR), name="images")
