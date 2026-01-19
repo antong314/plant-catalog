@@ -4,7 +4,8 @@ import type { Plant, FilterOptions, FilterState } from '../types';
 const API_URL = 'http://localhost:8000/api';
 
 export const fetchFilters = async (): Promise<FilterOptions> => {
-  const response = await axios.get(`${API_URL}/filters`);
+  // Add timestamp to prevent caching
+  const response = await axios.get(`${API_URL}/filters?t=${new Date().getTime()}`);
   return response.data;
 };
 

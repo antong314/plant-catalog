@@ -6,6 +6,8 @@ import { PlantGrid } from './components/PlantGrid';
 import { PlantModal } from './components/PlantModal';
 import { Search, Loader2 } from 'lucide-react';
 
+import logo from './assets/logo.webp';
+
 function App() {
   console.log('App component rendering');
   // Data State
@@ -94,20 +96,63 @@ function App() {
     setFilters(prev => ({ ...prev, [key]: values }));
   };
 
+  const handleToggleFavoritesView = () => {
+    const newShowFavoritesOnly = !showFavoritesOnly;
+    setShowFavoritesOnly(newShowFavoritesOnly);
+    
+    if (newShowFavoritesOnly) {
+      // Clear all filters when switching to favorites view
+      setSearchQuery('');
+      setFilters({
+        plant_family: [],
+        strata: [],
+        lifecycle: [],
+        time_to_maturity: [],
+        lifespan: [],
+        zone: [],
+        origin: [],
+        function: [],
+        spacing: [],
+      });
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setFilters({
+      plant_family: [],
+      strata: [],
+      lifecycle: [],
+      time_to_maturity: [],
+      lifespan: [],
+      zone: [],
+      origin: [],
+      function: [],
+      spacing: [],
+    });
+  };
+
+  const hasActiveFilters = searchQuery.length > 0 || Object.values(filters).some(arr => arr.length > 0);
+
   return (
     <div className="min-h-screen bg-gray-100 font-sans text-gray-900">
       {/* Header */}
       <header className="bg-emerald-800 text-white p-6 shadow-lg sticky top-0 z-40">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-             <h1 className="text-3xl font-bold flex items-center gap-2">
-                🌿 Tropical Plant Catalog
-             </h1>
-             <p className="text-emerald-200 text-sm mt-1">Explore nature's diversity</p>
+          <div className="w-full md:w-1/3 text-center md:text-left">
+             <div className="flex items-center justify-center md:justify-start gap-3">
+                <img src={logo} alt="Porvenir Design" className="h-12 w-auto" />
+                <div>
+                    <h1 className="text-2xl font-bold leading-tight">
+                        Tropical Plant Catalog
+                    </h1>
+                    <p className="text-emerald-200 text-xs">Explore nature's diversity</p>
+                </div>
+             </div>
           </div>
           
-          <div className="flex items-center gap-4 w-full md:w-auto">
-             <div className="relative w-full md:w-64">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-2/3 justify-end">
+             <div className="relative w-full sm:max-w-md flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input 
                     type="text" 
@@ -117,16 +162,30 @@ function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
              </div>
-             <button 
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`px-4 py-2 rounded-full font-semibold transition-all border ${
-                    showFavoritesOnly 
-                    ? 'bg-yellow-400 text-yellow-900 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' 
-                    : 'bg-emerald-700 text-white border-emerald-600 hover:bg-emerald-600'
-                }`}
-             >
-                {showFavoritesOnly ? '★ Favorites' : '☆ Favorites'}
-             </button>
+             
+             <div className="flex gap-2">
+                <button 
+                    onClick={handleClearFilters}
+                    disabled={!hasActiveFilters}
+                    className={`px-4 py-2 rounded-full font-semibold transition-all border whitespace-nowrap ${
+                        hasActiveFilters
+                        ? 'bg-emerald-700 text-white border-emerald-600 hover:bg-emerald-600 cursor-pointer'
+                        : 'bg-emerald-800/50 text-emerald-400 border-emerald-800/50 cursor-not-allowed'
+                    }`}
+                >
+                    Clear Filters
+                </button>
+                <button 
+                    onClick={handleToggleFavoritesView}
+                    className={`px-4 py-2 rounded-full font-semibold transition-all border whitespace-nowrap ${
+                        showFavoritesOnly 
+                        ? 'bg-yellow-400 text-yellow-900 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' 
+                        : 'bg-emerald-700 text-white border-emerald-600 hover:bg-emerald-600'
+                    }`}
+                >
+                    {showFavoritesOnly ? '★ Favorites' : '☆ Favorites'}
+                </button>
+             </div>
           </div>
         </div>
       </header>
